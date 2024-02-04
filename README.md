@@ -17,3 +17,9 @@ ___
 
 Located here: [step1_default_nginx](https://github.com/thankevan/Tutorial_WebHostServer/tree/main/step1_default_nginx)
 
+___
+
+### Step 2. Nginx with attached content
+*Add some content to the default server via an attached directory*
+
+Located here: [`step2_nginx_with_attached_content`](https://github.com/thankevan/Tutorial_WebHostServer/blob/main/step2_nginx_with_attached_content/)
