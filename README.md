@@ -1,7 +1,7 @@
 # Tutorial_WebHostServer
 Walking through getting Docker and Nginx set up to serve multiple sites on a single server.
 
-## Motiviation
+## Motivation
 I have used the same web hosting service for over 20 years. Their prices keep rising, updates to software happen infrequently, and they've removed some of the features I used. I mostly have static sites and it would be nice to just have a simple and inexpensive cloud server. I'd also like to learn Nginx and get more into Docker.
 
 I chose Nginx because it seems fairly ubiquitous.  
@@ -23,3 +23,4 @@ ___
 *Add some content to the default server via an attached directory*
 
 Located here: [`step2_nginx_with_attached_content`](https://github.com/thankevan/Tutorial_WebHostServer/blob/main/step2_nginx_with_attached_content/)
+[See relevant changes to the script.](https://github.com/thankevan/Tutorial_WebHostServer/pull/2/commits/7e29c1c898adcad97066be8dfcabcf521667f022)
