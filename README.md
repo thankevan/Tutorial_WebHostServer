@@ -12,7 +12,7 @@ I'll update this section with the different steps of progression. Each will be i
 
 ___
 
-### Step 1. Default nginx server
+### Step 1. Default Nginx server
 *Just get something running*
 
 Located here: [step1_default_nginx](https://github.com/thankevan/Tutorial_WebHostServer/tree/main/step1_default_nginx)
