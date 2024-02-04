@@ -1,6 +1,6 @@
 # Step 1. Default Nginx
 
-The `run_this.sh` script will get Nginx up and running in Docker (you need to have [Docker installed](https://docs.docker.com/desktop/) already).
+The [`run_this.sh`](https://github.com/thankevan/Tutorial_WebHostServer/blob/main/step1_default_nginx/run_this.sh) script will get Nginx up and running in Docker (you need to have [Docker installed](https://docs.docker.com/desktop/) already).
 
 The script is heavily documented/commented. It covers:
  - pulling new images, 
