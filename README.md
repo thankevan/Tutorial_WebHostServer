@@ -25,3 +25,13 @@ ___
 Located here: [`step2_nginx_with_attached_content`](https://github.com/thankevan/Tutorial_WebHostServer/blob/main/step2_nginx_with_attached_content/)
 
 [See relevant changes to the script.](https://github.com/thankevan/Tutorial_WebHostServer/pull/2/commits/7e29c1c898adcad97066be8dfcabcf521667f022)
+
+___
+
+### Step 3. Nginx on Ubuntu using a Dockerfile
+*Use a Dockerfile to setup the image and container.  Setup Nginx on Ubuntu.*
+
+In a production environment I might still use the [nginx](https://hub.docker.com/_/nginx) image or the official [ubuntu/nginx](https://hub.docker.com/r/ubuntu/nginx) image. But, to understand how different pieces work together, I'm going to setup Nginx on a plain [ubuntu](https://hub.docker.com/_/ubuntu) image.
+
+Located here: [`step3_ubuntu_with_nginx_via_dockerfile`](https://github.com/thankevan/Tutorial_WebHostServer/blob/main/step3_ubuntu_with_nginx_via_dockerfile/)
+
