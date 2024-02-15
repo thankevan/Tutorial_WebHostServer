@@ -35,3 +35,7 @@ In a production environment I might still use the [nginx](https://hub.docker.com
 
 Located here: [`step3_ubuntu_with_nginx_via_dockerfile`](https://github.com/thankevan/Tutorial_WebHostServer/blob/main/step3_ubuntu_with_nginx_via_dockerfile/)
 
+[See new Dockerfile.](https://github.com/thankevan/Tutorial_WebHostServer/pull/5/commits/2dfb43c47452a1762082f3d2cfb8d75b7ca482c0)
+
+[See relevant changes to the script.](https://github.com/thankevan/Tutorial_WebHostServer/pull/5/commits/69c2b9de0adc0ac70779d72ebda835c5113d51da)
+
