@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# step1_default_nginx
+
 # Get the nginx:latest image (name:tag) if we don't already have it
 #
 # Breakdown:
