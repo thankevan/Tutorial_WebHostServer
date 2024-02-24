@@ -12,6 +12,17 @@ RUN apt update && \
 RUN ln -sf /dev/stdout /var/log/nginx/access.log \
     && ln -sf /dev/stderr /var/log/nginx/error.log
 
+# After the include sites-enabled line, insert a line to include the conf files
+# in the my_confs directory (attached as a volume)
+RUN sed -i '/.*include.*sites-enabled.*;/a include /etc/nginx/my_confs/*.conf;' /etc/nginx/nginx.conf
+
+# After the error.log line, insert a line toprevent escaping the log output to
+# keep in human readable. The format given is the predefined log format from:
+# https://nginx.org/en/docs/http/ngx_http_log_module.html#log_format
+RUN sed -i "/.*error.log.*/a log_format  combined_unescaped escape=none '\$remote_addr - \$remote_user [\$time_local] \"\$request\" \$status \$body_bytes_sent \"\$http_referer\" \"\$http_user_agent\" \"\$gzip_ratio\"';" /etc/nginx/nginx.conf
+RUN cat /etc/nginx/nginx.conf
+
+
 # Run nginx in the foreground so docker doesn't stop the container
 CMD ["nginx", "-g", "daemon off;"]
 
