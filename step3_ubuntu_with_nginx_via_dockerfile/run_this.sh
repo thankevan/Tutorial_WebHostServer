@@ -46,12 +46,6 @@ echo "To stop the running container: CONTROL-C"
 #           overwrite the container folder on the right with the local folder on
 #           the left.
 #
-# Notes:
-#   - nginx at the end of the line automatically expands to nginx:latest (even
-#         if you have other nginx tags pulled).
-#
-#   - The image will be pulled from docker hub automatically.
-#
 echo "---"
 docker run -p 8000:80 --name ubuntu_with_nginx_via_dockerfile_container \
     -v ./nginx_html:/var/www/html ubuntu_with_nginx_via_dockerfile_image
