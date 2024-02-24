@@ -1,68 +1,68 @@
-# Step 3. Ubuntu with Nginx using a Dockerfile
+# Step 4. Host multiple static websites
 
-Update the [`nginx with attached content`](https://github.com/thankevan/Tutorial_WebHostServer/blob/main/step2_nginx_with_attached_content) to be built using a Dockerfile. We're going to start with an Ubuntu image and build it out ourselves. You can run it from [`run_this.sh`](https://github.com/thankevan/Tutorial_WebHostServer/blob/main/step3_ubuntu_with_nginx_via_dockerfile/run_this.sh).
+Update the [`ubuntu with nginx via docker`](https://github.com/thankevan/Tutorial_WebHostServer/blob/main/step3_ubuntu_with_nginx_via_dockerfile/) to host multiple websites. You can run it from [`run_this.sh`](https://github.com/thankevan/Tutorial_WebHostServer/blob/main/step4_multiple_static_sites/run_this.sh).
 
  Changes cover:
- - use a Dockerfile to build the image/container,
- - build up the server using Ubuntu as a base,
- - run nginx in the foreground,
- - reroute output from nginx,
- - and update the script to handle the new setup flow.
+ - have a directory per site,
+ - handle custom error pages,
+ - handle good subdomains that are different or the same sites,
+ - allow no subdomain and www subdomain to access the same site,
+ - and redirect or error for bad subdomains.
 
-## Some additional information
+## Instructions
 
-- [Dockerfile reference](https://docs.docker.com/engine/reference/builder/)
-- [Docker image layers](https://docs.docker.com/build/guide/layers/)
-- [Dockerfile best practices](https://docs.docker.com/develop/develop-images/guidelines/)
-- [Dockerfile command best practices](https://docs.docker.com/develop/develop-images/instructions/)
-- [Security best practices](https://docs.docker.com/develop/security-best-practices/)
+### Sites
+To properly see the different sites locally, you'll need to update your hosts file. I added these lines:
+```
+127.0.0.1 site1.com
+127.0.0.1 www.site1.com
+127.0.0.1 site2.com
+127.0.0.1 www.site2.com
+127.0.0.1 sub.site2.com
+127.0.0.1 bad.site2.com
+127.0.0.1 site3.com
+127.0.0.1 sub.site3.com
+```
+- Results for each:
+    - localhost
+        - The default Nginx site
+    - site1.com
+        - The site in step 2 & 3
+    - www.site1.com
+        - Undefined and goes to the default Nginx site
+    - site2.com
+        - A second site with its own 404 error page.
+    - www.site2.com
+        - Same as site2.
+    - sub.site2.com
+        - Same as site2 (used to show exclusion of bad subdomains).
+    - bad.site2.com
+        - Redirect to site2.com 404 error page
+    - site3.com
+        - A third site.
+    - sub.site3.com
+        - Its own separate site from site3.com (could be used for a blog, documentation, api, etc.)
+
+### Modifying server files
+I wanted to modify the nginx.conf file. This required adding lines at specific points. You can do this using `sed`. You might need to alter how `sed` is used based on your version of `sed`.
+
+Add a line before the matching line:
+```
+sed -i '/regex pattern to find a line/i Insert this line before' inputfile
+```
+
+Add a line after the matching line:
+```
+sed -i '/regex pattern to find a line/a Insert this line after' inputfile
+```
+
 
 ## Notes
 
-- When I build off Ubuntu, the default web directory moves from `/usr/share/nginx/html` to `/var/www/html`.
+- To attempt to catch site2 subdomains that should result in an error, I started by trying to define an Nginx regex in the proper `.conf` file: `server_name ~^(?!www\.)(?!sub\.).+\.site2.com$;`. This was unnecessary as `server_name *.site.com` will only match sites that are not previously defined.
 
-- I noticed that the running container/image might not get updated as expected. At that point I would try to prune all the cached items (`docker system prune -f -a`) and eventually restarted the desktop app to refresh.
+- I had to do some debugging of the Dockerfile and the results of the commands inside of it. I used these flags within the `docker build` command in `run_this.sh`
+    - To keep the output of the commands of build steps on the screen, you can add the `--progress=plain` flag. Otherwise, it defaults to `auto` which removes the output when moving to the next line. I used it with `RUN cat /etc/nginx/nginx.conf` in my Dockerfile to verify my line insertions were working correctly.
+    - To make it build from scratch each time you can add the `--no-cache` flag. It still adds the resulting layers to Docker but won't reuse them in later steps. You might want to clean things up when you're done so they don't take up space. If you want to always pull a fresh image you can also add the `--pull` flag.
 
-### Optimizing my base Dockerfile
-
-This was my original Dockerfile to just "get it working". I then experimented, fixed, and optimized it to get it how I wanted it to work. Thankfully I was able to look at the official [nginx Dockerfile online](https://github.com/nginxinc/docker-nginx/blob/4bf0763f4977fff7e9648add59e0540088f3ca9f/mainline/debian/Dockerfile) to see what they're doing. They do a lot of additional setup configuration including adding security and optimizing the size. I'll probably use that version for any "real" work; but, this is good enough to experiment with.
-
-```
-FROM ubuntu
-RUN apt update && \
-    apt -y install curl git vim nano nginx nodejs && \
-    echo "\ndaemon off;" >> /etc/nginx/nginx.conf && \
-    chown -R www-data:www-data /var/lib/nginx
-CMD nginx
-EXPOSE 80
-EXPOSE 443
-```
-
-#### EXPOSE
-
-- It is documenting that it is exposing ports 80 & 443 which may be handy for http and https in the future but we're not dealing with https yet.
-
-- It runs nginx in the foreground (daemon off). Containers only run so long as docker can detect that they're doing something and then they automatically shut down. If nginx ran in the background as the last command, docker would start it, not be able to detect it, and shut down. But, Nginx in the foreground ignores CONTROL-C. To stop the container, you could send a stop signal to nginx using this command from another local prompt:
-```
-docker exec -it ubuntu_with_nginx_via_dockerfile_container nginx -s stop
-```
-
-#### Getting CONTROL-C to stop the container
-
-- When I had `CMD nginx` it did not allow CONTROL-C to stop the run. I then moved the `daemon off` into the `CMD` from the `RUN` like this: `CMD ["nginx", "-g", "daemon off;"]` which did allow CONTROL-C to cancel. Further investigation shows that if I had just changed `CMD nginx` to `CMD ["nginx"]` that also would have worked.
-
-- The official Dockerfile also has `STOPSIGNAL SIGQUIT` which thought would fix the CONTROL-C issues (it overrides the default cancellation signal of `SIGTERM` as the signal passed into the container). In investigation I did not find necessary. But it could be that I didn't find the scenario where it was. For completeness, if the container doesn't get cancelled after 10s, Docker will then send a `SIGKILL` aka Force Quit.
-
-- The official Dockerfile also makes use of `ENTRYPOINT` which specifies a script to call and then uses the params of `CMD` as input to the entrypoint script. I tried it but didn't wind up needing it.
-
-- The `trap INT` command in the `run_this.sh` script from previous steps doesn't seem to be necessary. I now see the output from the script after the running container has been cancelled. I may go back to previous steps figure out why it was needed and remove it if not necessary.
-
-#### Output logs to docker
-
-- Depending on how I was running Nginx, output needed rerouting for it to show from docker. The rerouting was fixed by adding this to the Dockerfile:
-```
-# Create links to forward the nginx access.log to stdout and the nginx error.log
-# to stderr so they will pick up in the docker log collector
-RUN ln -sf /dev/stdout /var/log/nginx/access.log \
-    && ln -sf /dev/stderr /var/log/nginx/error.log
-```
+- Review the `.conf` files for more info.
