@@ -57,3 +57,9 @@ Located here: [`step4_multiple_static_sites`](https://github.com/thankevan/Tutor
 
 [See the new Nginx conf files.](https://github.com/thankevan/Tutorial_WebHostServer/pull/7/commits/7aa8cc32fd0f1b4b154cb9f61438074dc63acbf7)
 
+___
+
+### Step 5. Use docker compose
+*Stop using a one-off script and use docker compose instead.*
+
+Located here: [`step5_use_docker_compose`](https://github.com/thankevan/Tutorial_WebHostServer/blob/main/step5_use_docker_compose/)
