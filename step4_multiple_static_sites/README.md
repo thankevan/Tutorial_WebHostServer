@@ -23,24 +23,24 @@ To properly see the different sites locally, you'll need to update your hosts fi
 127.0.0.1 site3.com
 127.0.0.1 sub.site3.com
 ```
-- Results for each:
-    - localhost
+- Results for each (using port 8000):
+    - `localhost`
         - The default Nginx site
-    - site1.com
+    - `site1.com`
         - The site in step 2 & 3
-    - www.site1.com
+    - `www.site1.com`
         - Undefined and goes to the default Nginx site
-    - site2.com
+    - `site2.com`
         - A second site with its own 404 error page.
-    - www.site2.com
+    - `www.site2.com`
         - Same as site2.
-    - sub.site2.com
+    - `sub.site2.com`
         - Same as site2 (used to show exclusion of bad subdomains).
-    - bad.site2.com
+    - `bad.site2.com`
         - Redirect to site2.com 404 error page
-    - site3.com
+    - `site3.com`
         - A third site.
-    - sub.site3.com
+    - `sub.site3.com`
         - Its own separate site from site3.com (could be used for a blog, documentation, api, etc.)
 
 ### Modifying server files
