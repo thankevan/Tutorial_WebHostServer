@@ -20,8 +20,8 @@ Update the [`nginx with attached content`](https://github.com/thankevan/Tutorial
 ## Notes
 
 - When I build off Ubuntu, the default web directory moves from `/usr/share/nginx/html` to `/var/www/html`.
-
 - I noticed that the running container/image might not get updated as expected. At that point I would try to prune all the cached items (`docker system prune -f -a`) and eventually restarted the desktop app to refresh.
+- In [`run_this.sh`](https://github.com/thankevan/Tutorial_WebHostServer/blob/main/step3_ubuntu_with_nginx_via_dockerfile/run_this.sh), I attach a volume. For something this small, I could have put a `COPY` command into the Dockerfile.
 
 ### Optimizing my base Dockerfile
 
