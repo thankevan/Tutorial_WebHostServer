@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  websites:
+# Build using the Dockerfile in the current directory.
+    build: .
+# Name the image. If build wasn't defined it would start by pulling this image.
+    image: use_docker_compose_image:latest
+# Port mapping. Local:Container
+    ports:
+      - "8000:80"
+# Local bind mounts.
+# If there was a top level volumes: and a name was specified it would create a
+#     docker based volume. Use the name instead of the local path in that case.
+    volumes:
+      - ./nginx_html:/var/www/my_html
+      - ./nginx_confs:/etc/nginx/my_confs
+
