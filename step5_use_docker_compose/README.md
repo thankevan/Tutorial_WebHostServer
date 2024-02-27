@@ -1,68 +1,56 @@
-# Step 4. Host multiple static websites
+# Step 5. Use docker compose
 
-Update the [`ubuntu with nginx via docker`](https://github.com/thankevan/Tutorial_WebHostServer/blob/main/step3_ubuntu_with_nginx_via_dockerfile/) to host multiple websites. You can run it from [`run_this.sh`](https://github.com/thankevan/Tutorial_WebHostServer/blob/main/step4_multiple_static_sites/run_this.sh).
+Update the [`multiple static sites`](https://github.com/thankevan/Tutorial_WebHostServer/blob/main/step4_multiple_static_sites/) to use a dockerfile. You can now run it with `docker compose up`. 
 
  Changes cover:
- - have a directory per site,
- - handle custom error pages,
- - handle good subdomains that are different or the same sites,
- - allow no subdomain and www subdomain to access the same site,
- - and redirect or error for bad subdomains.
+ - Move the commands from `run_this.sh` to `docker-compose.yml` 
 
 ## Instructions
 
 ### Sites
-To properly see the different sites locally, you'll need to update your hosts file. I added these lines:
+
+- We're reusing the sites from step 4.
+
+### Docker commands
+
 ```
-127.0.0.1 site1.com
-127.0.0.1 www.site1.com
-127.0.0.1 site2.com
-127.0.0.1 www.site2.com
-127.0.0.1 sub.site2.com
-127.0.0.1 bad.site2.com
-127.0.0.1 site3.com
-127.0.0.1 sub.site3.com
+docker compose up
 ```
-- Results for each (using port 8000):
-    - `localhost`
-        - The default Nginx site
-    - `site1.com`
-        - The site in step 2 & 3
-    - `www.site1.com`
-        - Undefined and goes to the default Nginx site
-    - `site2.com`
-        - A second site with its own 404 error page.
-    - `www.site2.com`
-        - Same as site2.
-    - `sub.site2.com`
-        - Same as site2 (used to show exclusion of bad subdomains).
-    - `bad.site2.com`
-        - Redirect to site2.com 404 error page
-    - `site3.com`
-        - A third site.
-    - `sub.site3.com`
-        - Its own separate site from site3.com (could be used for a blog, documentation, api, etc.)
+Build the image and bring up the container. You cand also use the `-d` flag to run in "detached" mode which will run the container in the background.
 
-### Modifying server files
-I wanted to modify the nginx.conf file. This required adding lines at specific points. You can do this using `sed`. You might need to alter how `sed` is used based on your version of `sed`.
 
-Add a line before the matching line:
 ```
-sed -i '/regex pattern to find a line/i Insert this line before' inputfile
+docker compose down
 ```
+Remove the container.
 
-Add a line after the matching line:
 ```
-sed -i '/regex pattern to find a line/a Insert this line after' inputfile
+docker compose stop
 ```
+Stop the container.
 
+```
+docker compose start
+```
+Start the container.
 
-## Notes
+```
+docker exec -it <container name> bash
+```
+You can still use this command to log onto the container, watch the output of docker compose to see what the container name is.
 
-- To attempt to catch site2 subdomains that should result in an error, I started by trying to define an Nginx regex in the proper `.conf` file: `server_name ~^(?!www\.)(?!sub\.).+\.site2.com$;`. This was unnecessary as `server_name *.site.com` will only match sites that are not previously defined.
+```
+docker rm -f $(docker ps -aq || echo "-")
+```
+Removes all containers. This calls `docker ps -aq` to get all the container ids and passes them to `docker rm -f` which will force them to be removed, running or not. The `echo "-"` is there just to prevent an error if there are no running containers. In that case "-" will be passed to `docker rm -f` and then it won't find that container. I guess that still results in it complaining that it can't find the container but not that you don't know how to use the command.
 
-- I had to do some debugging of the Dockerfile and the results of the commands inside of it. I used these flags within the `docker build` command in `run_this.sh`
-    - To keep the output of the commands of build steps on the screen, you can add the `--progress=plain` flag. Otherwise, it defaults to `auto` which removes the output when moving to the next line. I used it with `RUN cat /etc/nginx/nginx.conf` in my Dockerfile to verify my line insertions were working correctly.
-    - To make it build from scratch each time you can add the `--no-cache` flag. It still adds the resulting layers to Docker but won't reuse them in later steps. You might want to clean things up when you're done so they don't take up space. If you want to always pull a fresh image you can also add the `--pull` flag.
+```
+docker rmi -f $(docker images -aq || echo "-")
+```
+Removes all images. Same as above only it's using the image versions of the commands.
 
-- Review the `.conf` files for more info.
+```
+docker system prune -af --volumes
+```
+Removes cached objects, unused images, and volumes.
+
